@@ -4,7 +4,7 @@ function DataExport({ habits, completions }) {
       habits,
       completions,
       exportDate: new Date().toISOString(),
-      version: "1.0"
+      version: '1.0'
     };
 
     const dataStr = JSON.stringify(data, null, 2);
@@ -13,7 +13,7 @@ function DataExport({ habits, completions }) {
 
     const link = document.createElement('a');
     link.href = url;
-    link.download = `habit-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = 'habit-tracker-backup-' + new Date().toISOString().split('T')[0] + '.json';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -30,15 +30,13 @@ function DataExport({ habits, completions }) {
         const importedData = JSON.parse(e.target.result);
 
         if (importedData.habits && importedData.completions) {
-          // Here you would typically call a function to update the app state
-          // For now, we'll just show a success message
           alert('Data imported successfully! Please refresh the page to see changes.');
           console.log('Imported data:', importedData);
         } else {
           alert('Invalid file format. Please select a valid habit tracker backup file.');
         }
       } catch (error) {
-        alert('Error reading file. Please make sure it\'s a valid JSON file.');
+        alert('Error reading file. Please make sure it is a valid JSON file.');
         console.error('Import error:', error);
       }
     };
@@ -54,66 +52,50 @@ function DataExport({ habits, completions }) {
   };
 
   return (
-    <div className="mb-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100">
-      <div className="flex items-center mb-6">
-        <div className="text-2xl mr-3">💾</div>
-        <h2 className="text-2xl font-semibold text-gray-800">Data Management</h2>
+    <section className="editorial-panel data-panel">
+      <div className="section-heading-row">
+        <div>
+          <p className="bracket-label bracket-label--blue">{'{ Data }'}</p>
+          <h2 className="section-title">Your practice stays yours.</h2>
+        </div>
+        <span className="section-number section-number--blue">04</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Export Data */}
-        <div className="text-center">
-          <button
-            onClick={exportData}
-            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg"
-          >
-            📤 Export Data
-          </button>
-          <p className="text-sm text-gray-600 mt-2">
-            Download your habits and progress as a JSON file
-          </p>
+      <p className="section-intro">
+        Everything is stored in your browser. Export a backup when you want a portable copy of your habits and progress.
+      </p>
+
+      <div className="data-action-grid">
+        <div className="data-action">
+          <span className="data-index">01</span>
+          <h3>Export</h3>
+          <p>Download habits and completion history as JSON.</p>
+          <button type="button" onClick={exportData} className="pill-button pill-button--blue">Export data ↗</button>
         </div>
 
-        {/* Import Data */}
-        <div className="text-center">
-          <label className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer block">
-            📥 Import Data
-            <input
-              type="file"
-              accept=".json"
-              onChange={importData}
-              className="hidden"
-            />
+        <div className="data-action">
+          <span className="data-index">02</span>
+          <h3>Import</h3>
+          <p>Select a previously exported Habit Tracker backup.</p>
+          <label className="pill-button pill-button--blue file-button">
+            Import data
+            <input type="file" accept=".json" onChange={importData} />
           </label>
-          <p className="text-sm text-gray-600 mt-2">
-            Upload a previously exported backup file
-          </p>
         </div>
 
-        {/* Clear Data */}
-        <div className="text-center">
-          <button
-            onClick={clearAllData}
-            className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg"
-          >
-            🗑️ Clear All Data
-          </button>
-          <p className="text-sm text-gray-600 mt-2">
-            Permanently delete all habits and progress
-          </p>
+        <div className="data-action">
+          <span className="data-index">03</span>
+          <h3>Clear</h3>
+          <p>Permanently remove habits and completion history from this browser.</p>
+          <button type="button" onClick={clearAllData} className="pill-button pill-button--orange">Clear all data</button>
         </div>
       </div>
 
-      <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <h3 className="font-semibold text-blue-800 mb-2">💡 Data Management Tips</h3>
-        <ul className="text-sm text-blue-700 space-y-1">
-          <li>• Export your data regularly to create backups</li>
-          <li>• Imported data will merge with existing habits</li>
-          <li>• Clear data action cannot be undone</li>
-          <li>• All data is stored locally in your browser</li>
-        </ul>
+      <div className="data-note">
+        <span>{'{ Note }'}</span>
+        <p>Export regularly if this tracker becomes part of your routine. Clearing local data cannot be undone.</p>
       </div>
-    </div>
+    </section>
   );
 }
 

@@ -3,14 +3,12 @@ function StatisticsDashboard({ habits, completions }) {
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
 
-  // Calculate statistics
   const totalHabits = habits.length;
   const activeHabits = habits.filter(habit => {
     const habitCompletions = completions[habit.id] || [];
     return habitCompletions.length > 0;
   }).length;
 
-  // Current streaks
   const currentStreaks = habits.map(habit => {
     const habitCompletions = completions[habit.id] || [];
     if (!habitCompletions.includes(today.toISOString().split('T')[0])) return 0;
@@ -25,9 +23,6 @@ function StatisticsDashboard({ habits, completions }) {
   });
 
   const longestCurrentStreak = Math.max(...currentStreaks, 0);
-  const totalCurrentStreaks = currentStreaks.reduce((sum, streak) => sum + streak, 0);
-
-  // Monthly completion rate
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const monthlyCompletions = [];
 
@@ -43,7 +38,6 @@ function StatisticsDashboard({ habits, completions }) {
   const avgMonthlyCompletion = monthlyCompletions.reduce((sum, comp) => sum + comp, 0) / daysInMonth;
   const monthlyCompletionRate = totalHabits > 0 ? Math.round((avgMonthlyCompletion / totalHabits) * 100) : 0;
 
-  // Best performing habits
   const habitStats = habits.map(habit => {
     const habitCompletions = completions[habit.id] || [];
     const completionRate = habitCompletions.length > 0 ?
@@ -57,88 +51,77 @@ function StatisticsDashboard({ habits, completions }) {
   }).sort((a, b) => b.completionRate - a.completionRate);
 
   const topHabits = habitStats.slice(0, 3);
+  const lastFourteen = monthlyCompletions.slice(-14);
 
   return (
-    <div className="mb-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100">
-      <div className="flex items-center mb-6">
-        <div className="text-2xl mr-3">📊</div>
-        <h2 className="text-2xl font-semibold text-gray-800">Statistics Dashboard</h2>
+    <section className="editorial-panel statistics-panel">
+      <div className="section-heading-row">
+        <div>
+          <p className="bracket-label bracket-label--lilac">{'{ Statistics }'}</p>
+          <h2 className="section-title">See the pattern, not the noise.</h2>
+        </div>
+        <span className="section-number section-number--lilac">03</span>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
-          <div className="text-2xl font-bold text-blue-600">{totalHabits}</div>
-          <div className="text-sm text-blue-800">Total Habits</div>
-        </div>
-
-        <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
-          <div className="text-2xl font-bold text-green-600">{activeHabits}</div>
-          <div className="text-sm text-green-800">Active Habits</div>
-        </div>
-
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg border border-orange-200">
-          <div className="text-2xl font-bold text-orange-600">{longestCurrentStreak}</div>
-          <div className="text-sm text-orange-800">Longest Streak</div>
-        </div>
-
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
-          <div className="text-2xl font-bold text-purple-600">{monthlyCompletionRate}%</div>
-          <div className="text-sm text-purple-800">Monthly Avg</div>
-        </div>
+      <div className="metric-grid">
+        <Metric value={totalHabits} label="Total habits" tone="green" />
+        <Metric value={activeHabits} label="Active habits" tone="blue" />
+        <Metric value={longestCurrentStreak} label="Longest streak" tone="orange" suffix="d" />
+        <Metric value={monthlyCompletionRate} label="Monthly average" tone="lilac" suffix="%" />
       </div>
 
-      {/* Top Performing Habits */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">🏆 Top Performing Habits</h3>
-        <div className="space-y-3">
-          {topHabits.map((habit, index) => (
-            <div key={habit.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center">
-                <div className="text-lg mr-3">{habit.icon || '🎯'}</div>
-                <div>
-                  <div className="font-medium text-gray-800">{habit.name}</div>
-                  <div className="text-sm text-gray-600">{habit.completionCount} completions</div>
+      <div className="analytics-grid">
+        <div className="analytics-block">
+          <p className="mini-label">Top performing</p>
+          <div className="ranking-list">
+            {topHabits.length === 0 && <p className="muted-copy">Complete a habit to start building statistics.</p>}
+            {topHabits.map((habit, index) => (
+              <div key={habit.id} className="ranking-row">
+                <span className="ranking-index">0{index + 1}</span>
+                <div className="ranking-name">
+                  <span aria-hidden="true">{habit.icon || '○'}</span>
+                  <span>{habit.name}</span>
+                </div>
+                <div className="ranking-value">
+                  <strong>{habit.completionRate}%</strong>
+                  <span>{habit.completionCount} completions</span>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-lg font-bold text-green-600">{habit.completionRate}%</div>
-                <div className="text-xs text-gray-500">completion rate</div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Monthly Progress Chart */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">📈 Monthly Progress</h3>
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="flex items-end space-x-1 h-20">
-            {monthlyCompletions.slice(-14).map((completed, index) => {
+        <div className="analytics-block">
+          <p className="mini-label">Last 14 days</p>
+          <div className="bar-chart" aria-label="Last fourteen days completion chart">
+            {lastFourteen.map((completed, index) => {
               const height = totalHabits > 0 ? (completed / totalHabits) * 100 : 0;
-              const isToday = index === monthlyCompletions.slice(-14).length - 1;
+              const isLast = index === lastFourteen.length - 1;
+              const dayNumber = new Date(currentYear, currentMonth, index + (daysInMonth - lastFourteen.length + 1)).getDate();
 
               return (
-                <div key={index} className="flex-1 flex flex-col items-center">
+                <div key={index} className="bar-column">
                   <div
-                    className={`w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t transition-all duration-500 ${
-                      isToday ? 'from-green-400 to-green-600' : ''
-                    }`}
-                    style={{ height: `${Math.max(height, 5)}%` }}
+                    className={'bar-fill' + (isLast ? ' is-current' : '')}
+                    style={{ height: Math.max(height, 4) + '%' }}
                   />
-                  <div className={`text-xs mt-1 ${isToday ? 'font-bold text-green-600' : 'text-gray-500'}`}>
-                    {new Date(currentYear, currentMonth, index + (daysInMonth - 13)).getDate()}
-                  </div>
+                  <span>{dayNumber}</span>
                 </div>
               );
             })}
           </div>
-          <div className="text-center text-sm text-gray-600 mt-2">
-            Last 14 days • {monthlyCompletionRate}% average completion rate
-          </div>
+          <p className="chart-caption">{monthlyCompletionRate}% monthly average completion</p>
         </div>
       </div>
+    </section>
+  );
+}
+
+function Metric({ value, label, tone, suffix = '' }) {
+  return (
+    <div className={'metric metric--' + tone}>
+      <strong>{value}{suffix}</strong>
+      <span>{label}</span>
     </div>
   );
 }
