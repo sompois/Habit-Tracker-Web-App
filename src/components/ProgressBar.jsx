@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-function ProgressBar({ completed, total }) {
+function ProgressBar({ completed, total, mode = 'habits' }) {
   const [animatedPercentage, setAnimatedPercentage] = useState(0);
   const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
 
@@ -11,13 +11,21 @@ function ProgressBar({ completed, total }) {
     return () => clearTimeout(timer);
   }, [percentage]);
 
+  const isCommitmentMode = mode === 'commitments';
+
   return (
     <section className="progress-section">
       <div className="progress-copy">
-        <p className="bracket-label bracket-label--orange">{'{ Today }'}</p>
+        <p className="bracket-label bracket-label--orange">
+          {isCommitmentMode ? '{ Promise Reliability }' : '{ Today }'}
+        </p>
         <div className="progress-stat">
           <span className="progress-number">{percentage}%</span>
-          <span className="progress-context">{completed} of {total} habits completed</span>
+          <span className="progress-context">
+            {isCommitmentMode
+              ? completed + ' of ' + total + ' promises kept'
+              : completed + ' of ' + total + ' habits completed'}
+          </span>
         </div>
       </div>
 

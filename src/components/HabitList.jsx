@@ -1,6 +1,6 @@
 import HabitItem from './HabitItem';
 
-function HabitList({ habits, completions, onToggleComplete, onEditHabit, onDeleteHabit }) {
+function HabitList({ habits, completions, commitments = [], onToggleComplete, onEditHabit, onDeleteHabit }) {
   const today = new Date().toISOString().split('T')[0];
 
   const getStreak = (habitId) => {
@@ -23,7 +23,7 @@ function HabitList({ habits, completions, onToggleComplete, onEditHabit, onDelet
     <section className="habit-list-section">
       <div className="section-heading-row section-heading-row--bordered">
         <div>
-          <p className="bracket-label bracket-label--green">{'{ Your Habits }'}</p>
+          <p className="bracket-label bracket-label--green">{'{ Habit Library }'}</p>
           <h2 className="section-title">Keep the system visible.</h2>
         </div>
 
@@ -46,6 +46,7 @@ function HabitList({ habits, completions, onToggleComplete, onEditHabit, onDelet
             <HabitItem
               key={habit.id}
               habit={habit}
+              commitment={commitments.find(item => item.habitId === habit.id)}
               isCompletedToday={(completions[habit.id] || []).includes(today)}
               streak={getStreak(habit.id)}
               onToggleComplete={onToggleComplete}

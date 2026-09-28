@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useLocalStorage from './hooks/useLocalStorage';
 import AddHabitForm from './components/AddHabitForm';
+import CommitmentPlanner from './components/CommitmentPlanner';
 import HabitList from './components/HabitList';
 import ProgressBar from './components/ProgressBar';
 import CalendarView from './components/CalendarView';
@@ -10,9 +11,13 @@ import DataExport from './components/DataExport';
 function App() {
   const [habits, setHabits] = useLocalStorage('habits', []);
   const [completions, setCompletions] = useLocalStorage('completions', {});
+  const [dailyCommitments, setDailyCommitments] = useLocalStorage('dailyCommitments', {});
   const [activeTab, setActiveTab] = useState('habits');
 
   const today = new Date().toISOString().split('T')[0];
+  const todayCommitments = (dailyCommitments[today] || []).filter(commitment =>
+    habits.some(habit => habit.id === commitment.habitId)
+  );
 
   const addHabit = (newHabit) => {
     const habit = {
@@ -31,9 +36,18 @@ function App() {
 
   const deleteHabit = (id) => {
     setHabits(habits.filter(h => h.id !== id));
+
     const newCompletions = { ...completions };
     delete newCompletions[id];
     setCompletions(newCompletions);
+
+    const newCommitments = Object.fromEntries(
+      Object.entries(dailyCommitments).map(([date, entries]) => [
+        date,
+        entries.filter(entry => entry.habitId !== id)
+      ])
+    );
+    setDailyCommitments(newCommitments);
   };
 
   const toggleComplete = (id) => {
@@ -52,19 +66,74 @@ function App() {
     }
   };
 
+  const toggleCommitment = (habitId) => {
+    const exists = todayCommitments.some(entry => entry.habitId === habitId);
+    let next;
+
+    if (exists) {
+      next = todayCommitments.filter(entry => entry.habitId !== habitId);
+    } else {
+      if (todayCommitments.length >= 3) return;
+      next = [
+        ...todayCommitments,
+        {
+          habitId,
+          mode: 'full',
+          reason: '',
+          committedAt: new Date().toISOString(),
+        }
+      ];
+    }
+
+    setDailyCommitments({
+      ...dailyCommitments,
+      [today]: next,
+    });
+  };
+
+  const setCommitmentMode = (habitId, mode) => {
+    const next = todayCommitments.map(entry =>
+      entry.habitId === habitId
+        ? { ...entry, mode, reason: mode === 'full' ? '' : entry.reason || '', adjustedAt: mode === 'minimum' ? new Date().toISOString() : null }
+        : entry
+    );
+
+    setDailyCommitments({
+      ...dailyCommitments,
+      [today]: next,
+    });
+  };
+
+  const setCommitmentReason = (habitId, reason) => {
+    const next = todayCommitments.map(entry =>
+      entry.habitId === habitId ? { ...entry, reason } : entry
+    );
+
+    setDailyCommitments({
+      ...dailyCommitments,
+      [today]: next,
+    });
+  };
+
   const completedToday = habits.filter(habit => (completions[habit.id] || []).includes(today)).length;
-  const percentage = habits.length > 0 ? Math.round((completedToday / habits.length) * 100) : 0;
+  const completedCommitments = todayCommitments.filter(commitment =>
+    (completions[commitment.habitId] || []).includes(today)
+  ).length;
+
+  const trackedTotal = todayCommitments.length > 0 ? todayCommitments.length : habits.length;
+  const trackedCompleted = todayCommitments.length > 0 ? completedCommitments : completedToday;
+  const percentage = trackedTotal > 0 ? Math.round((trackedCompleted / trackedTotal) * 100) : 0;
 
   const getMotivationalMessage = () => {
-    if (percentage === 100 && habits.length > 0) return 'All systems complete. Keep the rhythm.';
-    if (percentage >= 75) return 'Almost there. Protect the streak.';
-    if (percentage >= 50) return 'Momentum is visible. Keep moving.';
-    if (percentage >= 25) return 'The system is starting to work.';
-    return 'Small actions become repeatable systems.';
+    if (habits.length === 0) return 'Start with one promise small enough to repeat.';
+    if (todayCommitments.length === 0) return 'Choose up to three promises you are willing to protect today.';
+    if (percentage === 100) return 'You kept today\'s promises. Reliability beats intensity.';
+    if (percentage >= 50) return 'Keep the promise small enough to finish.';
+    return 'A busy day is a reason to adjust the promise, not abandon it.';
   };
 
   const tabs = [
-    { id: 'habits', label: 'Habits', index: '01', accent: 'green' },
+    { id: 'habits', label: 'Commit', index: '01', accent: 'green' },
     { id: 'calendar', label: 'Calendar', index: '02', accent: 'pink' },
     { id: 'statistics', label: 'Statistics', index: '03', accent: 'lilac' },
     { id: 'data', label: 'Data', index: '04', accent: 'blue' },
@@ -79,25 +148,29 @@ function App() {
         <a className="wordmark" href="#top" aria-label="Habit System home">
           <span>HABIT</span><span className="wordmark-accent">/SYSTEM</span>
         </a>
-        <span className="topbar-note">{'{ daily practice }'}</span>
+        <span className="topbar-note">{'{ keep your word }'}</span>
       </header>
 
       <main id="top">
         <section className="hero page-frame">
           <div className="hero-copy">
-            <p className="bracket-label">{'{ Habit Tracker }'}</p>
+            <p className="bracket-label">{'{ Commitment Planner }'}</p>
             <h1 className="hero-title">
-              <span>Build</span>
-              <span>better</span>
-              <span className="hero-title-accent">habits.</span>
+              <span>Keep</span>
+              <span>your</span>
+              <span className="hero-title-accent">word.</span>
             </h1>
           </div>
 
           <div className="hero-meta">
             <p className="hero-message">{getMotivationalMessage()}</p>
-            <div className="hero-score" aria-label={percentage + ' percent complete today'}>
+            <div className="hero-score" aria-label={percentage + ' percent of today tracked items complete'}>
               <span className="hero-score-number">{percentage}%</span>
-              <span className="hero-score-label">{completedToday} / {habits.length} complete today</span>
+              <span className="hero-score-label">
+                {todayCommitments.length > 0
+                  ? completedCommitments + ' / ' + todayCommitments.length + ' promises kept today'
+                  : completedToday + ' / ' + habits.length + ' habits complete today'}
+              </span>
             </div>
           </div>
         </section>
@@ -120,11 +193,28 @@ function App() {
         <section className={'workspace page-frame workspace--' + activeTab}>
           {activeTab === 'habits' && (
             <>
+              {habits.length > 0 && (
+                <CommitmentPlanner
+                  habits={habits}
+                  commitments={todayCommitments}
+                  onToggleCommitment={toggleCommitment}
+                  onSetMode={setCommitmentMode}
+                  onSetReason={setCommitmentReason}
+                />
+              )}
+
+              <ProgressBar
+                completed={trackedCompleted}
+                total={trackedTotal}
+                mode={todayCommitments.length > 0 ? 'commitments' : 'habits'}
+              />
+
               <AddHabitForm onAddHabit={addHabit} />
-              <ProgressBar completed={completedToday} total={habits.length} />
+
               <HabitList
                 habits={habits}
                 completions={completions}
+                commitments={todayCommitments}
                 onToggleComplete={toggleComplete}
                 onEditHabit={editHabit}
                 onDeleteHabit={deleteHabit}
@@ -141,15 +231,15 @@ function App() {
           )}
 
           {activeTab === 'data' && (
-            <DataExport habits={habits} completions={completions} />
+            <DataExport habits={habits} completions={completions} dailyCommitments={dailyCommitments} />
           )}
         </section>
 
         {habits.length === 0 && activeTab === 'habits' && (
           <section className="empty-state page-frame">
             <p className="bracket-label bracket-label--green">{'{ Start here }'}</p>
-            <h2>Your first repeatable action starts above.</h2>
-            <p>Name one behavior small enough to repeat tomorrow.</p>
+            <h2>Create one promise worth keeping.</h2>
+            <p>Define the full habit and a minimum version for busy days.</p>
           </section>
         )}
       </main>
@@ -157,7 +247,7 @@ function App() {
       <footer className="site-footer">
         <div className="page-frame footer-inner">
           <span>Habit / System</span>
-          <span>Local-first habit tracking</span>
+          <span>Plan less · adjust deliberately · keep your word</span>
         </div>
       </footer>
     </div>
