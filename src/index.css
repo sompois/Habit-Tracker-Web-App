@@ -1268,3 +1268,341 @@ label.file-button:focus-within {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* Commitment Planner */
+.commitment-panel {
+  margin-bottom: 42px;
+}
+
+.commitment-count {
+  min-width: 110px;
+  padding-left: 18px;
+  border-left: 1px solid var(--hairline);
+  text-align: right;
+}
+
+.commitment-count strong {
+  display: block;
+  color: var(--green);
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.commitment-count span {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.commitment-intro {
+  margin-top: -12px;
+  margin-bottom: 28px;
+}
+
+.commitment-picker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.commitment-option {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 74px;
+  padding: 12px 14px;
+  cursor: pointer;
+  color: var(--cream);
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  transition: border-color 180ms ease, color 180ms ease, opacity 180ms ease, transform 180ms ease;
+}
+
+.commitment-option:hover:not(:disabled) {
+  border-color: var(--cream);
+  transform: translateY(-1px);
+}
+
+.commitment-option.is-selected {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.commitment-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.32;
+}
+
+.commitment-option-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--hairline);
+  border-radius: 50%;
+}
+
+.commitment-option-copy {
+  min-width: 0;
+}
+
+.commitment-option-copy strong,
+.commitment-option-copy small {
+  display: block;
+}
+
+.commitment-option-copy strong {
+  overflow: hidden;
+  color: inherit;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.commitment-option-copy small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.commitment-option-mark {
+  font-size: 20px;
+}
+
+.commitment-details {
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.commitment-details-heading {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 0.7fr);
+  gap: 24px;
+  padding: 12px 0;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.commitment-row {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 0.7fr);
+  gap: 24px;
+  align-items: center;
+  min-height: 116px;
+  padding: 20px 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.commitment-row-copy {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.commitment-index {
+  padding-top: 5px;
+  color: var(--green);
+  font-size: 12px;
+}
+
+.commitment-row h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.commitment-row p {
+  margin: 7px 0 0;
+  max-width: 54ch;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.commitment-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  border-radius: 100px;
+}
+
+.mode-switch button {
+  min-height: 38px;
+  cursor: pointer;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  font-size: 13px;
+}
+
+.mode-switch button + button {
+  border-left: 1px solid var(--hairline);
+}
+
+.mode-switch button.is-active {
+  color: var(--green);
+}
+
+.mode-switch button.is-active.minimum {
+  color: var(--orange);
+}
+
+.adjustment-field {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.adjustment-field span {
+  color: var(--orange);
+  font-size: 11px;
+}
+
+.adjustment-field select {
+  min-width: 0;
+  height: 38px;
+  padding: 0 12px;
+  color: var(--cream);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  outline: none;
+}
+
+.adjustment-field select:focus {
+  border-color: var(--orange);
+}
+
+.commitment-note {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.commitment-note span {
+  color: var(--green);
+  font-size: 12px;
+}
+
+.commitment-note p {
+  margin: 0;
+  max-width: 64ch;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.form-grid--three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.habit-card.is-committed {
+  border-top-color: rgba(10, 228, 72, 0.7);
+}
+
+.commitment-badge {
+  padding: 3px 8px;
+  color: var(--green);
+  border: 1px solid var(--green);
+  border-radius: 100px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.commitment-badge.is-minimum {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+
+.habit-version-label {
+  display: inline-block;
+  min-width: 34px;
+  margin-right: 8px;
+  color: var(--green);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.habit-version-label--minimum {
+  color: var(--orange);
+}
+
+.habit-edit-form--three {
+  grid-template-columns: repeat(3, 1fr) auto;
+}
+
+@media (max-width: 900px) {
+  .commitment-picker {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .commitment-details-heading,
+  .commitment-row {
+    grid-template-columns: 1fr;
+  }
+
+  .commitment-details-heading span:last-child {
+    display: none;
+  }
+
+  .form-grid--three {
+    grid-template-columns: 1fr;
+  }
+
+  .habit-edit-form--three {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .commitment-count {
+    min-width: 84px;
+  }
+
+  .commitment-count strong {
+    font-size: 34px;
+  }
+
+  .commitment-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .commitment-row {
+    gap: 16px;
+  }
+
+  .commitment-row-copy {
+    grid-template-columns: 30px 1fr;
+  }
+
+  .adjustment-field {
+    grid-template-columns: 1fr;
+  }
+
+  .commitment-note {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+}

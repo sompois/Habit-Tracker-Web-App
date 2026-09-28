@@ -1,26 +1,32 @@
 import { useState } from 'react';
 
-function HabitItem({ habit, isCompletedToday, streak, onToggleComplete, onEdit, onDelete }) {
+function HabitItem({ habit, commitment, isCompletedToday, streak, onToggleComplete, onEdit, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(habit.name);
-  const [editDescription, setEditDescription] = useState(habit.description);
+  const [editDescription, setEditDescription] = useState(habit.description || '');
+  const [editMinimum, setEditMinimum] = useState(habit.minimum || '');
 
   const handleEditSubmit = (e) => {
     e.preventDefault();
-    onEdit(habit.id, { name: editName.trim(), description: editDescription.trim() });
+    onEdit(habit.id, {
+      name: editName.trim(),
+      description: editDescription.trim(),
+      minimum: editMinimum.trim(),
+    });
     setIsEditing(false);
   };
 
   const handleEditCancel = () => {
     setEditName(habit.name);
-    setEditDescription(habit.description);
+    setEditDescription(habit.description || '');
+    setEditMinimum(habit.minimum || '');
     setIsEditing(false);
   };
 
   return (
-    <article className={'habit-card' + (isCompletedToday ? ' is-complete' : '')}>
+    <article className={'habit-card' + (isCompletedToday ? ' is-complete' : '') + (commitment ? ' is-committed' : '')}>
       {isEditing ? (
-        <form onSubmit={handleEditSubmit} className="habit-edit-form">
+        <form onSubmit={handleEditSubmit} className="habit-edit-form habit-edit-form--three">
           <div className="field-group">
             <label htmlFor={'habit-name-' + habit.id}>Habit name</label>
             <input
@@ -32,13 +38,23 @@ function HabitItem({ habit, isCompletedToday, streak, onToggleComplete, onEdit, 
             />
           </div>
           <div className="field-group">
-            <label htmlFor={'habit-description-' + habit.id}>Description</label>
+            <label htmlFor={'habit-description-' + habit.id}>Full version</label>
             <input
               id={'habit-description-' + habit.id}
               type="text"
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
-              placeholder="Description"
+              placeholder="Full version"
+            />
+          </div>
+          <div className="field-group">
+            <label htmlFor={'habit-minimum-' + habit.id}>Minimum version</label>
+            <input
+              id={'habit-minimum-' + habit.id}
+              type="text"
+              value={editMinimum}
+              onChange={(e) => setEditMinimum(e.target.value)}
+              placeholder="Minimum version"
             />
           </div>
           <div className="inline-actions">
@@ -62,8 +78,16 @@ function HabitItem({ habit, isCompletedToday, streak, onToggleComplete, onEdit, 
               <div className="habit-title-row">
                 <h3>{habit.name}</h3>
                 <span className="habit-status">{isCompletedToday ? 'complete' : 'open'}</span>
+                {commitment && (
+                  <span className={'commitment-badge' + (commitment.mode === 'minimum' ? ' is-minimum' : '')}>
+                    today · {commitment.mode}
+                  </span>
+                )}
               </div>
-              {habit.description && <p>{habit.description}</p>}
+
+              {habit.description && <p><span className="habit-version-label">Full</span>{habit.description}</p>}
+              {habit.minimum && <p><span className="habit-version-label habit-version-label--minimum">Min</span>{habit.minimum}</p>}
+
               <div className="streak-line">
                 <span className="streak-label">streak</span>
                 <strong>{streak} day{streak === 1 ? '' : 's'}</strong>

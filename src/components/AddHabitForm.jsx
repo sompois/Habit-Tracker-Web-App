@@ -3,13 +3,19 @@ import { useState } from 'react';
 function AddHabitForm({ onAddHabit }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [minimum, setMinimum] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (name.trim()) {
-      onAddHabit({ name: name.trim(), description: description.trim() });
+      onAddHabit({
+        name: name.trim(),
+        description: description.trim(),
+        minimum: minimum.trim(),
+      });
       setName('');
       setDescription('');
+      setMinimum('');
     }
   };
 
@@ -17,13 +23,13 @@ function AddHabitForm({ onAddHabit }) {
     <form onSubmit={handleSubmit} className="editorial-panel add-habit-panel">
       <div className="section-heading-row">
         <div>
-          <p className="bracket-label bracket-label--green">{'{ New Habit }'}</p>
-          <h2 className="section-title">Define the next action.</h2>
+          <p className="bracket-label bracket-label--green">{'{ Habit Library }'}</p>
+          <h2 className="section-title">Define the full and minimum version.</h2>
         </div>
-        <span className="section-number">01</span>
+        <span className="section-number">+</span>
       </div>
 
-      <div className="form-grid">
+      <div className="form-grid form-grid--three">
         <div className="field-group">
           <label htmlFor="name">Habit name</label>
           <input
@@ -31,25 +37,36 @@ function AddHabitForm({ onAddHabit }) {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Drink water, walk, read..."
+            placeholder="Read, exercise, journal..."
             required
           />
         </div>
 
         <div className="field-group">
-          <label htmlFor="description">Description <span>optional</span></label>
+          <label htmlFor="description">Full version <span>optional</span></label>
           <input
             type="text"
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="A small rule that makes it repeatable"
+            placeholder="Read for 30 minutes"
+          />
+        </div>
+
+        <div className="field-group">
+          <label htmlFor="minimum">Minimum version <span>for busy days</span></label>
+          <input
+            type="text"
+            id="minimum"
+            value={minimum}
+            onChange={(e) => setMinimum(e.target.value)}
+            placeholder="Read 2 pages"
           />
         </div>
       </div>
 
       <button type="submit" className="pill-button pill-button--primary">
-        Add habit <span aria-hidden="true">↗</span>
+        Add to habit library <span aria-hidden="true">↗</span>
       </button>
     </form>
   );

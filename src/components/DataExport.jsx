@@ -1,10 +1,11 @@
-function DataExport({ habits, completions }) {
+function DataExport({ habits, completions, dailyCommitments = {} }) {
   const exportData = () => {
     const data = {
       habits,
       completions,
+      dailyCommitments,
       exportDate: new Date().toISOString(),
-      version: '1.0'
+      version: '1.1'
     };
 
     const dataStr = JSON.stringify(data, null, 2);
@@ -47,6 +48,7 @@ function DataExport({ habits, completions }) {
     if (window.confirm('Are you sure you want to clear all habit data? This action cannot be undone.')) {
       localStorage.removeItem('habits');
       localStorage.removeItem('completions');
+      localStorage.removeItem('dailyCommitments');
       alert('All data cleared. Please refresh the page.');
     }
   };
@@ -62,14 +64,14 @@ function DataExport({ habits, completions }) {
       </div>
 
       <p className="section-intro">
-        Everything is stored in your browser. Export a backup when you want a portable copy of your habits and progress.
+        Everything is stored in your browser. Export a backup when you want a portable copy of your habits, promises, and progress.
       </p>
 
       <div className="data-action-grid">
         <div className="data-action">
           <span className="data-index">01</span>
           <h3>Export</h3>
-          <p>Download habits and completion history as JSON.</p>
+          <p>Download habits, daily commitments, and completion history as JSON.</p>
           <button type="button" onClick={exportData} className="pill-button pill-button--blue">Export data ↗</button>
         </div>
 
@@ -86,7 +88,7 @@ function DataExport({ habits, completions }) {
         <div className="data-action">
           <span className="data-index">03</span>
           <h3>Clear</h3>
-          <p>Permanently remove habits and completion history from this browser.</p>
+          <p>Permanently remove habits, promises, and completion history from this browser.</p>
           <button type="button" onClick={clearAllData} className="pill-button pill-button--orange">Clear all data</button>
         </div>
       </div>
