@@ -53,55 +53,71 @@ function App() {
   };
 
   const completedToday = habits.filter(habit => (completions[habit.id] || []).includes(today)).length;
+  const percentage = habits.length > 0 ? Math.round((completedToday / habits.length) * 100) : 0;
 
   const getMotivationalMessage = () => {
-    const percentage = habits.length > 0 ? Math.round((completedToday / habits.length) * 100) : 0;
-    if (percentage === 100 && habits.length > 0) return "🎉 Amazing! All habits completed today!";
-    if (percentage >= 75) return "🚀 Great progress! Keep it up!";
-    if (percentage >= 50) return "💪 You're doing well! Stay consistent!";
-    if (percentage >= 25) return "🌟 Good start! Every step counts!";
-    return "🌱 Every journey begins with a single step!";
+    if (percentage === 100 && habits.length > 0) return 'All systems complete. Keep the rhythm.';
+    if (percentage >= 75) return 'Almost there. Protect the streak.';
+    if (percentage >= 50) return 'Momentum is visible. Keep moving.';
+    if (percentage >= 25) return 'The system is starting to work.';
+    return 'Small actions become repeatable systems.';
   };
 
   const tabs = [
-    { id: 'habits', label: 'Habits', icon: '🎯' },
-    { id: 'calendar', label: 'Calendar', icon: '📅' },
-    { id: 'statistics', label: 'Statistics', icon: '📊' },
-    { id: 'data', label: 'Data', icon: '💾' },
+    { id: 'habits', label: 'Habits', index: '01', accent: 'green' },
+    { id: 'calendar', label: 'Calendar', index: '02', accent: 'pink' },
+    { id: 'statistics', label: 'Statistics', index: '03', accent: 'lilac' },
+    { id: 'data', label: 'Data', index: '04', accent: 'blue' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center mb-8 animate-fade-in-up">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            🌟 Habit Tracker
-          </h1>
-          <p className="text-gray-600 text-lg">{getMotivationalMessage()}</p>
-        </div>
+    <div className="app-shell">
+      <div className="ambient-shape ambient-shape--one" aria-hidden="true" />
+      <div className="ambient-shape ambient-shape--two" aria-hidden="true" />
 
-        {/* Navigation Tabs */}
-        <div className="mb-6 bg-white rounded-xl shadow-lg p-2 border border-gray-100">
-          <div className="flex space-x-1">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transform scale-105'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <span className="mr-2">{tab.icon}</span>
-                {tab.label}
-              </button>
-            ))}
+      <header className="topbar page-frame">
+        <a className="wordmark" href="#top" aria-label="Habit System home">
+          <span>HABIT</span><span className="wordmark-accent">/SYSTEM</span>
+        </a>
+        <span className="topbar-note">{'{ daily practice }'}</span>
+      </header>
+
+      <main id="top">
+        <section className="hero page-frame">
+          <div className="hero-copy">
+            <p className="bracket-label">{'{ Habit Tracker }'}</p>
+            <h1 className="hero-title">
+              <span>Build</span>
+              <span>better</span>
+              <span className="hero-title-accent">habits.</span>
+            </h1>
           </div>
-        </div>
 
-        {/* Tab Content */}
-        <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+          <div className="hero-meta">
+            <p className="hero-message">{getMotivationalMessage()}</p>
+            <div className="hero-score" aria-label={percentage + ' percent complete today'}>
+              <span className="hero-score-number">{percentage}%</span>
+              <span className="hero-score-label">{completedToday} / {habits.length} complete today</span>
+            </div>
+          </div>
+        </section>
+
+        <nav className="tab-nav page-frame" aria-label="Habit tracker sections">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={'tab-button tab-button--' + tab.accent + (activeTab === tab.id ? ' is-active' : '')}
+              aria-current={activeTab === tab.id ? 'page' : undefined}
+            >
+              <span className="tab-index">{tab.index}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <section className={'workspace page-frame workspace--' + activeTab}>
           {activeTab === 'habits' && (
             <>
               <AddHabitForm onAddHabit={addHabit} />
@@ -127,16 +143,23 @@ function App() {
           {activeTab === 'data' && (
             <DataExport habits={habits} completions={completions} />
           )}
-        </div>
+        </section>
 
         {habits.length === 0 && activeTab === 'habits' && (
-          <div className="text-center mt-12 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <div className="text-6xl mb-4 animate-pulse-gentle">🎯</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">Ready to build better habits?</h3>
-            <p className="text-gray-500">Start by adding your first habit above!</p>
-          </div>
+          <section className="empty-state page-frame">
+            <p className="bracket-label bracket-label--green">{'{ Start here }'}</p>
+            <h2>Your first repeatable action starts above.</h2>
+            <p>Name one behavior small enough to repeat tomorrow.</p>
+          </section>
         )}
-      </div>
+      </main>
+
+      <footer className="site-footer">
+        <div className="page-frame footer-inner">
+          <span>Habit / System</span>
+          <span>Local-first habit tracking</span>
+        </div>
+      </footer>
     </div>
   );
 }
